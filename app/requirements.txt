@@ -4,7 +4,8 @@ celery
 redis
 amqp
 sqlalchemy
-asyncpg
+# asyncpg
+aiosqlite
 jinja2
 pytest
 alembic
