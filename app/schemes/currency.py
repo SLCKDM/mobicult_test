@@ -6,8 +6,7 @@ from pydantic import BaseModel
 class TunedModel(BaseModel):
 
     class Config:
-        """ Tells pydantic to convert even not dict obj to json """
-        from_attributes = True
+        from_attributes = True  # Tells pydantic to convert even not dict obj to json
 
 
 class CurrencyScheme(TunedModel):
