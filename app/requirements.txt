@@ -8,3 +8,5 @@ asyncpg
 jinja2
 pytest
 alembic
+flake8
+mypy
