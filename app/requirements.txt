@@ -1,0 +1,10 @@
+uvicorn
+fastapi
+celery
+redis
+amqp
+sqlalchemy
+asyncpg
+jinja2
+pytest
+alembic
