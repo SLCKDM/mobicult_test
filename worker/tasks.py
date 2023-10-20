@@ -10,8 +10,8 @@ async def _load_current_xchange_rate():
     async with async_session() as db:
         curr_val_dal = CurrencyValueDAL(db)
         curr_dal = CurrencyDAL(db)
-        curr_dal.get()
-        curr_val_dal.create(date=data['date'], )
+        await curr_dal.get(data[''])
+        await curr_val_dal.create(date=data['date'], )
 
 
 @app.task

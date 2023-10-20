@@ -14,7 +14,8 @@ templates = Jinja2Templates(directory=conf.TEMPLATE_DIR)
 
 app.include_router(bp)
 
+
 @app.get("/", response_class=HTMLResponse)
 async def index_page(request: Request):
-    ''' returns home page '''
+    """ returns home page """
     return templates.TemplateResponse("index.html", {"request": request})
