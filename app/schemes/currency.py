@@ -1,12 +1,11 @@
 import datetime as dt
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class TunedModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True  # Tells pydantic to convert even not dict obj to json
 
 
 class CurrencyScheme(TunedModel):
