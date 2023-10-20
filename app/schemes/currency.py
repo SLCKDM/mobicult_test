@@ -13,9 +13,7 @@ class CurrencyScheme(TunedModel):
     '''
     Currency scheme
     '''
-    id: int
-    short: str
-    name: str
+    id: str
 
 
 class CurrencyValueScheme(TunedModel):
@@ -24,4 +22,6 @@ class CurrencyValueScheme(TunedModel):
     '''
     id: int
     date: dt.date
-    currency: CurrencyScheme
+    currency_from: CurrencyScheme
+    currency_to: CurrencyScheme
+    value: float

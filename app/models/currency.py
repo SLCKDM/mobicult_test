@@ -15,10 +15,15 @@ class Currency(Base):
     Currency model
     '''
     __tablename__ = 'currencies'
-    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
-    short: Mapped[str] = mapped_column(sa.String)  # add constaints
-    name: Mapped[str] = mapped_column(sa.String)  # add constaints
-    values: Mapped[List["CurrencyValue"]] = relationship(back_populates="currency")
+    id: Mapped[str] = mapped_column(sa.String(length=3), primary_key=True)
+
+
+association_table = sa.Table(
+    "association_table",
+    Base.metadata,
+    sa.Column("cur_id", sa.ForeignKey("currencies.id")),
+    sa.Column("val_id", sa.ForeignKey("currencies_values.id")),
+)
 
 
 class CurrencyValue(Base):
@@ -26,7 +31,10 @@ class CurrencyValue(Base):
     Currency values model
     '''
     __tablename__ = 'currencies_values'
-    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(sa.Integer, primary_key=True, autoincrement=True)
     date: Mapped[dt.date] = mapped_column(sa.Date)
-    currency_id: Mapped[int] = mapped_column(sa.ForeignKey("currencies.id"))
-    currency: Mapped["Currency"] = relationship(back_populates="values")
+    currency_from_id: Mapped[int] = mapped_column(sa.ForeignKey("currencies.id"))
+    currency_to_id: Mapped[int] = mapped_column(sa.ForeignKey("currencies.id"))
+    currency_from: Mapped["Currency"] = relationship(foreign_keys=currency_from_id)
+    currency_to: Mapped["Currency"] = relationship(foreign_keys=currency_to_id)
+    value: Mapped[float] = mapped_column(sa.Float)
