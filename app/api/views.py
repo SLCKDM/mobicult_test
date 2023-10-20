@@ -14,12 +14,16 @@ async def _create_currency(
     currency: CurrencyScheme,
 ) -> Currency:
     cur_dal = CurrencyDAL(db=db)
-    new_curr = await cur_dal.create(
-        id=currency.id,
-        short=currency.short,
-        name=currency.name,
-    )
+    new_curr = await cur_dal.create(id=currency.id)
     return new_curr
+
+
+async def _get_all_currencies(
+    db: AsyncSession,
+) -> list[Currency]:
+    cur_dal = CurrencyDAL(db=db)
+    currencies = await cur_dal.list()
+    return currencies
 
 
 @bp.post("/create", response_model=CurrencyScheme)
@@ -32,3 +36,12 @@ async def create_currency(
     new_curr = await _create_currency(db=db, currency=currency)
     await db.commit()
     return new_curr
+
+
+@bp.get("/", response_model=list[CurrencyScheme])
+async def get_currencies(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    ''' endpoint for creating new currency '''
+    return await _get_all_currencies(db=db)
