@@ -15,6 +15,17 @@
             ],
             "jinja": true,
             "justMyCode": true
+        },
+        {
+            "name": "Celery",
+            "type": "python",
+            "request": "launch",
+            "module": "celery",
+            "args": [
+                "-A", "worker.app:app", "worker", "--loglevel", "DEBUG"
+            ],
+            "jinja": true,
+            "justMyCode": true
         }
     ]
 }

@@ -1,11 +1,19 @@
 services:
 
-  app:
-    build: app/
-    ports:
-      - 8000:8000
+  # app:
+  #   build: app/
+  #   ports:
+  #     - 8000:8000
 
-  db:
-    image: postgres:14.1-alpine
+  # db:
+  #   image: postgres:14.1-alpine
+  #   ports:
+  #     - 5432:5432
+
+  redis:
+    image: redis:latest
+    command: redis-server --save 20 1 --loglevel debug
     ports:
-      - 5432:5432
+      - 6379:6379
+    volumes:
+      - ./docker/redis:/var/lib/redis

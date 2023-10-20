@@ -1,14 +1,19 @@
 from celery import Celery
 from celery.schedules import crontab
 
+tasks = [
+    'worker.tasks',
+]
 
-app = Celery('celery_worker')
+app = Celery('celery_worker', include=tasks)
 app.config_from_object('worker.config')
-app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
     'every': {
-        'task': '<name_of_app>.tasks.repeat_order_make',
-        'schedule': crontab(hour='*/24'),
+        'task': 'worker.tasks.load_current_xchange_rate',
+        'schedule': crontab(minute='*/1'),
     }
 }
+
+if __name__ == '__main__':
+    app.start()
