@@ -1,48 +1,46 @@
-import unittest
-import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
+import asyncio
 
-from app.main import app
-from app.db import get_db, base
-from app.db.base import Base
+from sqlalchemy.orm.exc import UnmappedInstanceError
 
-SQLALCHEMY_DATABASE_URL = "sqlite://"
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-)
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+from app.dals.currency_dal import CurrencyDAL
+from app.tests.conftest import AsyncTestingSessionLocal
 
 
-Base.metadata.create_all(bind=engine)
+async def dal():
+    async with AsyncTestingSessionLocal() as session:
+        return CurrencyDAL(session)
+
+currency_dal = asyncio.run(dal())
 
 
-def override_get_db():
-    db = None
+def test_create():
+    asyncio.run(currency_dal.create('RUB'))
+    asyncio.run(currency_dal.create('USD'))
+
+
+async def test_get_success():
+    currency = await currency_dal.get('RUB')
+    assert currency is not None
+    assert currency.id == 'RUB'
+
+
+async def test_get_wrong():
+    currency1 = await currency_dal.get(5123123)
+    currency2 = await currency_dal.get('23423453')
+    assert currency1 is None
+    assert currency2 is None
+
+
+def test_delete_existing():
+    currency = asyncio.run(currency_dal.get('RUB'))
+    asyncio.run(currency_dal.delete(currency))  # type: ignore
+
+
+def test_delete_not_existing():
+    currency = asyncio.run(currency_dal.get(1234))
     try:
-        db = TestingSessionLocal()
-        yield db
-    finally:
-        if db:
-            db.close()
-
-
-app.dependency_overrides[get_db] = override_get_db
-
-client = TestClient(app)
-
-
-class TestCurrencyDAL(unittest.TestCase):
-
-    def test_create(self):
-        self.assertEqual(1, 1)
-
-    def test_delete(self):
-        self.assertEqual(1, 1)
-
-    def test_update(self):
-        self.assertEqual(1, 1)
+        asyncio.run(currency_dal.delete(currency))
+    except UnmappedInstanceError:
+        pass
+    else:
+        raise
