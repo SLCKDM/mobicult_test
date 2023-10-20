@@ -18,14 +18,6 @@ class Currency(Base):
     id: Mapped[str] = mapped_column(sa.String(length=3), primary_key=True)
 
 
-association_table = sa.Table(
-    "association_table",
-    Base.metadata,
-    sa.Column("cur_id", sa.ForeignKey("currencies.id")),
-    sa.Column("val_id", sa.ForeignKey("currencies_values.id")),
-)
-
-
 class CurrencyValue(Base):
     '''
     Currency values model
