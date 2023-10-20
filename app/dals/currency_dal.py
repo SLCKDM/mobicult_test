@@ -45,8 +45,8 @@ class CurrencyValueDAL(DAL):
 
     async def list(
         self,
-        dt_from: dt.date | dt.datetime | None,
-        dt_to: dt.date | dt.datetime | None,
+        dt_from: dt.date | dt.datetime | None = None,
+        dt_to: dt.date | dt.datetime | None = None,
         currency_from_id: str | None = None,
         currency_to_ids: list[str] | None = None,
     ) -> list[CurrencyValue]:
@@ -64,13 +64,15 @@ class CurrencyValueDAL(DAL):
     async def create(
         self,
         date: dt.date,
-        currency_id: str,
+        currency_from_id: str,
+        currency_to_id: str,
         value: float
     ) -> CurrencyValue:
         """ create currency value  """
         new_currency_value = CurrencyValue(
             date=date,
-            currency_id=currency_id,
+            currency_from_id=currency_from_id,
+            currency_to_id=currency_to_id,
             value=value,
         )
         self.db.add(new_currency_value)
