@@ -13,3 +13,4 @@ mypy
 httpx
 pytest-asyncio
 aiohttp
+asgiref
