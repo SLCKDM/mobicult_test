@@ -1,6 +1,6 @@
 import pytest
 import datetime as dt
-from fixer.main import FixerAPI
+from fixer.src.main import FixerAPI
 
 api = FixerAPI('c2d088d2826118705a1035f11fdf4fd1')
 
