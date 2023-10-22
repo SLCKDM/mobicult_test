@@ -1,12 +1,15 @@
 from typing import Sequence
+import datetime as dt
+from os import getenv
+
+import sqlalchemy as sa
+
 from worker.app import app
-from fixer.main import FixerAPI
+from fixer.src.main import FixerAPI
 from app.dals.currency_dal import CurrencyValueDAL, CurrencyDAL
 from app.db.session import async_session, AsyncSession
 from app.models.currency import CurrencyValue
 from asgiref.sync import async_to_sync
-import datetime as dt
-import sqlalchemy as sa
 
 
 async def check_if_exists(
@@ -26,9 +29,10 @@ async def check_if_exists(
 
 
 async def _load_current_xchange_rate(source: str, currencies: Sequence[str]):
-    api = FixerAPI('c2d088d2826118705a1035f11fdf4fd1')
+    api = FixerAPI(getenv('FIXER_API_TOKEN', ''))
     data = await api.latest(source, currencies)
-
+    if not data['success']:
+        return
     async with async_session() as db:
         curr_val_dal = CurrencyValueDAL(db)
         curr_dal = CurrencyDAL(db)
@@ -37,6 +41,7 @@ async def _load_current_xchange_rate(source: str, currencies: Sequence[str]):
 
         if not await curr_dal.get(from_currency):
             await curr_dal.create(from_currency)
+            await db.commit()
 
         for rate_name, rate in data['quotes'].items():
             date = dt.date.fromtimestamp(timestamp)
@@ -44,6 +49,7 @@ async def _load_current_xchange_rate(source: str, currencies: Sequence[str]):
 
             if not await curr_dal.get(to_currency):
                 await curr_dal.create(to_currency)
+                await db.commit()
 
             already_exists = await check_if_exists(db, date, from_currency, to_currency)
 
@@ -56,7 +62,6 @@ async def _load_current_xchange_rate(source: str, currencies: Sequence[str]):
                 currency_to_id=to_currency,
                 value=rate,
             )
-
         await db.commit()
 
 

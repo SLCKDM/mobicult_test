@@ -12,12 +12,12 @@ app.conf.beat_schedule = {
     'EUR_RUB_xchange_rate': {
         'task': 'worker.tasks.load_current_xchange_rate',
         'schedule': crontab(hour='*/24'),
-        'args': ('EUR', ('RUB',)),
+        'args': ('EUR', ['RUB']),
     },
     'USD_RUB_xchange_rate': {
         'task': 'worker.tasks.load_current_xchange_rate',
         'schedule': crontab(hour='*/24'),
-        'args': ('USD', ('RUB',)),
+        'args': ('USD', ['RUB']),
     },
 }
 
