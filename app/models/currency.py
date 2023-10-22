@@ -17,6 +17,9 @@ class Currency(Base):
     __tablename__ = 'currencies'
     id: Mapped[str] = mapped_column(sa.String(length=3), primary_key=True)
 
+    def __repr__(self) -> str:
+        return f'<Currency: {self.id}>'
+
 
 class CurrencyValue(Base):
     '''
@@ -30,3 +33,6 @@ class CurrencyValue(Base):
     currency_from: Mapped["Currency"] = relationship(foreign_keys=currency_from_id)
     currency_to: Mapped["Currency"] = relationship(foreign_keys=currency_to_id)
     value: Mapped[float] = mapped_column(sa.Float)
+
+    def __repr__(self):
+        return f'<[{self.date}] {self.__class__.__name__} {self.currency_from_id}->{self.currency_to_id}>'
